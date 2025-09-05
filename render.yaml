@@ -43,12 +43,12 @@ services:
     plan: starter
     buildCommand: |
       pip install --upgrade pip setuptools wheel
-      pip install --only-binary=all -r requirements.txt
+      pip install --only-binary=all --no-cache-dir -r requirements.txt
     startCommand: "uvicorn models.service:app --host 0.0.0.0 --port $PORT"
     healthCheckPath: /v1/health
     envVars:
       - key: PYTHON_VERSION
-        value: "3.10"
+        value: "3.10.12"
       - key: PYTHONPATH
         value: "."
       - fromGroup: ai-equity-research-secrets
