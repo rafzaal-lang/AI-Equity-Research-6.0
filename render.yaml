@@ -1,9 +1,87 @@
 services:
+  # Main API Gateway / Reports Service
   - type: web
-    name: ai-equity-research
+    name: ai-equity-research-reports
     env: python
-    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
-    startCommand: "uvicorn retriever.service:app --host 0.0.0.0 --port $PORT"
+    region: oregon
+    plan: starter
+    buildCommand: |
+      pip install --upgrade pip setuptools wheel
+      pip install --only-binary=all -r requirements.txt
+    startCommand: "uvicorn apis.reports.service:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /v1/health
     envVars:
       - key: PYTHON_VERSION
-        value: 3.10.12
+        value: "3.10"
+      - key: PYTHONPATH
+        value: "."
+      - fromGroup: ai-equity-research-secrets
+
+  # Retriever Service
+  - type: web
+    name: ai-equity-research-retriever
+    env: python
+    region: oregon
+    plan: starter
+    buildCommand: |
+      pip install --upgrade pip setuptools wheel
+      pip install --only-binary=all -r requirements.txt
+    startCommand: "uvicorn retriever.service:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /v1/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.10"
+      - key: PYTHONPATH
+        value: "."
+      - fromGroup: ai-equity-research-secrets
+
+  # Models Service
+  - type: web
+    name: ai-equity-research-models
+    env: python
+    region: oregon
+    plan: starter
+    buildCommand: |
+      pip install --upgrade pip setuptools wheel
+      pip install --only-binary=all -r requirements.txt
+    startCommand: "uvicorn models.service:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /v1/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.10"
+      - key: PYTHONPATH
+        value: "."
+      - fromGroup: ai-equity-research-secrets
+
+  # Redis Cache
+  - type: redis
+    name: ai-equity-research-redis
+    region: oregon
+    plan: starter
+    maxmemoryPolicy: allkeys-lru
+
+  # Vector Database (if needed)
+  # - type: web
+  #   name: qdrant
+  #   env: docker
+  #   dockerfilePath: ./qdrant.Dockerfile
+  #   plan: starter
+
+envVarGroups:
+  - name: ai-equity-research-secrets
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: FMP_API_KEY
+        sync: false
+      - key: FRED_API_KEY
+        sync: false
+      - key: SEC_USER_AGENT
+        value: "AI-Equity-Research (contact@yourcompany.com)"
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: ai-equity-research-redis
+          property: connectionString
+      - key: QDRANT_URL
+        value: "http://localhost:6333"  # Update if using external Qdrant
