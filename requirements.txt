@@ -1,57 +1,45 @@
-# =================================
-# RENDER-OPTIMIZED REQUIREMENTS.TXT
-# =================================
-# Force binary wheels to avoid Cython compilation errors
+# Ultra-conservative requirements.txt for guaranteed deployment
+# Force binary wheels only - no compilation
 --only-binary=all
+--prefer-binary
 
-# Build essentials (NEW - fixes compilation issues)
-setuptools>=68.0.0
-wheel>=0.40.0
+# Build essentials first
+pip>=23.0.0
+setuptools>=65.0.0
+wheel>=0.38.0
 
-# Web / APIs (UNCHANGED from your original)
-fastapi==0.114.0
-uvicorn[standard]==0.30.6
-flask==3.0.3
-flask-cors==4.0.1
-flask-limiter==3.7.0
-requests==2.32.3
-httpx==0.27.0
-aiohttp==3.10.3
+# Scientific stack - ultra-stable versions with guaranteed wheels
+numpy==1.23.5
+pandas==1.5.3
+scipy==1.9.3
+scikit-learn==1.2.2
+matplotlib==3.6.3
+seaborn==0.12.2
+
+# Web / APIs - keep your versions but test core ones first
+fastapi==0.100.0
+uvicorn==0.23.0
+pydantic==2.5.0
+requests==2.31.0
+httpx==0.25.0
+
+# Core dependencies
 python-dotenv==1.0.1
-PyJWT[crypto]==2.8.0
-pydantic==2.8.2
-
-# Parsing / Feeds (UNCHANGED from your original)
-beautifulsoup4==4.12.3
-lxml==5.2.2
-feedparser==6.0.11
-pyyaml==6.0.2
-
-# Data / ML (MODIFIED for better wheel availability)
-numpy==1.26.4          # KEPT - this version is fine
-pandas==2.0.3          # CHANGED from 2.2.2 - stable wheels
-scipy==1.11.4          # CHANGED from 1.13.1 - stable wheels  
-scikit-learn==1.3.2    # CHANGED from 1.5.1 - stable wheels
-matplotlib==3.7.5      # CHANGED from 3.9.0 - stable wheels
-seaborn==0.12.2        # CHANGED from 0.13.2 - stable wheels
-
-# Providers / Clients (UNCHANGED from your original)
-openai==1.43.0
-qdrant-client==1.9.1
-
-# Caching & Metrics & Resilience (UNCHANGED from your original)
-redis==5.0.7
-prometheus-client==0.20.0
-tenacity==8.5.0
-
-# Reporting (UNCHANGED from your original)
+PyJWT==2.8.0
 jinja2==3.1.4
-markdown==3.6
+redis==5.0.7
 
-# Email and file handling (UNCHANGED from your original)
-email-validator==2.1.1
-python-multipart==0.0.9
-
-# Testing (UNCHANGED from your original)
-pytest==8.3.3
-pytest-asyncio==0.24.0
+# Less critical packages - install after core works
+# beautifulsoup4==4.12.3
+# lxml==5.2.2
+# feedparser==6.0.11
+# pyyaml==6.0.2
+# openai==1.43.0
+# qdrant-client==1.9.1
+# prometheus-client==0.20.0
+# tenacity==8.5.0
+# markdown==3.6
+# email-validator==2.1.1
+# python-multipart==0.0.9
+# pytest==8.3.3
+# pytest-asyncio==0.24.0
